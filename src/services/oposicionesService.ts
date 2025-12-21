@@ -46,12 +46,16 @@ export const oposicionesService = {
   },
 
   // Solicitar comparar temario
-  async compararTemario(payload: CompararTemarioPayload): Promise<void> {
+  async compararTemario(
+    payload: CompararTemarioPayload
+  ): Promise<any> {
     try {
-      await api.post('/comparar-temario', payload);
+      const response = await api.post('/comparar-temario', payload);
+      return response.data;
     } catch (error) {
       console.error('Error comparando temario:', error);
       throw error;
     }
-  }
+}
+
 };

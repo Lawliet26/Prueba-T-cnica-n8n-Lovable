@@ -98,7 +98,7 @@ const OposicionCard: React.FC<OposicionCardProps> = ({ oposicion, index, onSolic
             onClick={() => onSolicitarTemario(oposicion.id)}
             block
           >
-            Solicitar Temario
+           {oposicion.tieneTemarioListo ? "Descargar temario" : "Solicitar Temario"} 
           </Button>
         </motion.div>
       </Card>

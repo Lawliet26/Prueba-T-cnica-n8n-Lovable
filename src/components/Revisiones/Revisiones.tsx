@@ -4,23 +4,19 @@ import { Collapse, Button, Modal, Input, message, Tag, Space, Spin } from 'antd'
 import { 
   CheckCircleOutlined, 
   EditOutlined, 
-  FileOutlined,
   UserOutlined,
-  PercentageOutlined,
   LinkOutlined
 } from '@ant-design/icons';
 import { revisionesService } from '../../services/revisionesService';
 import { useAuth } from '../../context/AuthContext';
-import { Revision } from '../../types';
 import './Revisiones.css';
-import { log } from 'util';
 
 const { Panel } = Collapse;
 const { TextArea } = Input;
 
 const Revisiones: React.FC = () => {
   const { user } = useAuth();
-  const [revisiones, setRevisiones] = useState<Revision[]>([]);
+  const [revisiones, setRevisiones] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -49,8 +45,9 @@ const Revisiones: React.FC = () => {
     
     setActionLoading(true);
     try {
+      
       await revisionesService.aprobar(
-        parseInt(user?.id || '0'),
+        parseInt(user?.profesor_id || '0'),
         parseInt(id)
       );
       
@@ -81,7 +78,7 @@ const Revisiones: React.FC = () => {
     setActionLoading(true);
     try {
       await revisionesService.solicitarCorreccion(
-        parseInt(user?.id || '0'),
+        parseInt(user?.profesor_id|| '0'),
         parseInt(selectedRevision || '0'),
         correccionText
       );
@@ -150,119 +147,99 @@ const Revisiones: React.FC = () => {
         </motion.p>
       </div>
 
-      <motion.div
-        className="stats-bar"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="stat-item">
-          <span className="stat-number">{revisionesPendientes.length}</span>
-          <span className="stat-label">Pendientes</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-number">{revisiones.filter(r => r.estado === 'aprobado').length}</span>
-          <span className="stat-label">Aprobadas</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-number">{revisiones.filter(r => r.estado === 'corregir').length}</span>
-          <span className="stat-label">En Corrección</span>
-        </div>
-      </motion.div>
-
       <AnimatePresence>
       <Collapse
-  className="revisiones-collapse"
-  accordion
-  expandIconPosition="end"
->
-  {revisiones.map((revision, index) => (
-    <Panel
-      key={revision.id}
-      header={
-        <motion.div
-          className="revision-header"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 * index }}
-        >
-          <div className="revision-header-content">
-            <h3 className="revision-title">{revision.titulo}</h3>
-            <div className="revision-meta">
-              <Space size="middle">
-                <span><UserOutlined /> {revision.candidato}</span>
-                {getEstadoTag(revision.estado)}
-              </Space>
-            </div>
-          </div>
-
-          <div className="revision-actions">
-            <Button
-              type="primary"
-              icon={<CheckCircleOutlined />}
-              onClick={() => handleAprobar(revision.id)}
-              loading={actionLoading}
-              className="btn-aprobar"
-            >
-              Aprobar
-            </Button>
-            <Button
-              icon={<EditOutlined />}
-              onClick={() => handleOpenCorreccion(revision.id)}
-              className="btn-corregir"
-            >
-              Corregir
-            </Button>
-          </div>
-        </motion.div>
-      }
-    >
-      <div className="revision-content">
-        {revision.temas.map((tema, tIndex) => (
-          <div key={tIndex} className="tema-section">
-            <h4>{tema.titulo}</h4>
-
-            {tema.recursos_vinculados.map((recurso, rIndex) => (
-              <div key={rIndex} className="documento-item">
-                <Space size="middle">
-                  <Tag color="blue">{recurso.ley_detectada}</Tag>
-                  <Tag color="green">
-                    {parseFloat(recurso.coincidencia_maxima).toFixed(2)}%
-                  </Tag>
-                  <a
-                  href={recurso.url_pdf_evidencia}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="documento-link"
-                >
-                  <LinkOutlined /> Ver PDF Evidencia
-                </a>
-                </Space>
-               
-                {/* ✅ NOTAS COMO LISTA (NO CONCATENADAS) */}
-                {recurso.fragmentos_notas?.length > 0 && (
-                  <div className="notas-section">
-                    <h4>Notas:</h4>
-                    <ul>
-                      {recurso.fragmentos_notas.map((n, i) => (
-                        <li key={i}>
-                          {n.nota} ({n.coincidencia}%)
-                        </li>
-                      ))}
-                    </ul>
+        className="revisiones-collapse"
+        accordion
+        expandIconPosition="end"
+      >
+      {Array.isArray(revisiones) &&
+            revisiones.length > 0 &&
+            revisiones.some(c => Array.isArray(c.temas) && c.temas.length > 0) &&
+            revisiones.map((revision, index) => (
+          <Panel
+            key={revision.id}
+            header={
+              <motion.div
+                className="revision-header"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * index }}
+              >
+                <div className="revision-header-content">
+                  <h3 className="revision-title">{revision.titulo}</h3>
+                  <div className="revision-meta">
+                    <Space size="middle">
+                      <span><UserOutlined /> {revision.candidato}</span>
+                      {getEstadoTag(revision.estado)}
+                    </Space>
                   </div>
-                )}
-                 
+                </div>
 
-              </div>
-            ))}
-          </div>
+                <div className="revision-actions">
+                  <Button
+                    type="primary"
+                    icon={<CheckCircleOutlined />}
+                    onClick={() => handleAprobar(revision.id)}
+                    loading={actionLoading}
+                    className="btn-aprobar"
+                  >
+                    Aprobar
+                  </Button>
+                  <Button
+                    icon={<EditOutlined />}
+                    onClick={() => handleOpenCorreccion(revision.id)}
+                    className="btn-corregir"
+                  >
+                    Corregir
+                  </Button>
+                </div>
+              </motion.div>
+            }
+          >
+            <div className="revision-content">
+              {Array.isArray(revision.temas) && revision.temas.map((tema, tIndex) => (
+                <div key={tIndex} className="tema-section">
+                  <h4>{tema.titulo}</h4>
+
+                  {tema.recursos_vinculados.map((recurso, rIndex) => (
+                    <div key={rIndex} className="documento-item">
+                      <Space size="middle">
+                        <Tag color="blue">{recurso.ley_detectada}</Tag>
+                        <Tag color="green">
+                          {parseFloat(recurso.coincidencia_maxima).toFixed(2)}%
+                        </Tag>
+                        <a
+                        href={recurso.url_pdf_evidencia}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="documento-link"
+                      >
+                        <LinkOutlined /> Ver PDF Evidencia
+                      </a>
+                      </Space>
+                    
+                      {recurso.fragmentos_notas?.length > 0 && (
+                        <div className="notas-section">
+                          <h4>Notas:</h4>
+                          <ul>
+                            {recurso.fragmentos_notas.map((n, i) => (
+                              <li key={i}>
+                                {n.nota} ({n.coincidencia}%)
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+
+            </div>
+          </Panel>
         ))}
-
-      </div>
-    </Panel>
-  ))}
-</Collapse>
+      </Collapse>
 
       </AnimatePresence>
 

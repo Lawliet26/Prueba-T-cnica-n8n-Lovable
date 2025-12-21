@@ -1,15 +1,20 @@
 import api from '../config/api';
-import { Correccion } from '../types';
 
-interface CorreccionAPI {
-  temario_id: number;
-  oposicion_nombre: string;
-  tema_convocatoria_titulo: string;
-  coincidencia_porcentaje: string;
-  ley_detectada: string;
-  notas: string;
-  url_pdf_evidencia: string;
-  tema_academia_id: number;
+
+export interface CorreccionGrupo {
+  temarioId: number;
+  titulo: string; // oposicion_nombre
+  temas: {
+    titulo: string;
+    detalles: {
+      id: string;
+      candidato: string;
+      notas: string;
+      documentos: string[];
+      estado: 'pendiente' | 'aprobado' | 'corregir';
+      temaAcademiaId: number;
+    }[];
+  }[];
 }
 
 interface TemarioDecisionPayload {
@@ -21,24 +26,23 @@ interface TemarioDecisionPayload {
 
 export const correccionesService = {
   // Obtener lista de correcciones
-  async getCorrecciones(): Promise<Correccion[]> {
+  async getCorrecciones(): Promise<any[]> {
     try {
-      const response = await api.get<CorreccionAPI[]>('/lista-correciones');
-      
-      return response.data.map(item => ({
-        id: item.temario_id.toString(),
-        titulo: item.oposicion_nombre,
-        descripcion: item.tema_convocatoria_titulo,
-        candidato: item.ley_detectada,
-        fechaCorreccion: new Date().toISOString(),
-        comentarioCorrector: item.notas,
-        estado: 'pendiente' as const,
-        coincidenciaPorcentaje: parseFloat(item.coincidencia_porcentaje),
-        urlPdfEvidencia: item.url_pdf_evidencia,
-        temaAcademiaId: item.tema_academia_id
-      }));
+      const response = await api.get<any[]>('/lista-correciones');
+
+      return response.data.map(correcion => {
+        return {
+          id: String(correcion.temario_id),
+          titulo: correcion.oposicion_nombre,
+          descripcion: 'Correcion del temario',
+          candidato: 'Sistema de detección',
+          fechaEnvio: new Date().toISOString(),
+          estado: 'pendiente' as const,
+          temas: correcion.temas_convocatoria
+        };
+      });
     } catch (error) {
-      console.error('Error obteniendo correcciones:', error);
+      console.error('Error obteniendo revisiones:', error);
       throw error;
     }
   },
@@ -58,7 +62,7 @@ export const correccionesService = {
     return this.enviarDecision({
       profesor_id: profesorId,
       temario_id: temarioId,
-      accion: 'APROBADO',
+      accion: 'APROBAR',
       comentarios
     });
   },
@@ -68,7 +72,7 @@ export const correccionesService = {
     return this.enviarDecision({
       profesor_id: profesorId,
       temario_id: temarioId,
-      accion: 'RECHAZADO',
+      accion: 'RECHAZAR',
       comentarios
     });
   }

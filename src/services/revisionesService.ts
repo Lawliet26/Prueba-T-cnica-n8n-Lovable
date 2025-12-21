@@ -1,16 +1,4 @@
 import api from '../config/api';
-import { Revision } from '../types';
-
-// interface RevisionAPI {
-//   temario_id: number;
-//   oposicion_nombre: string;
-//   tema_convocatoria_titulo: string;
-//   coincidencia_porcentaje: string;
-//   ley_detectada: string;
-//   notas: string;
-//   url_pdf_evidencia: string;
-//   tema_academia_id: number;
-// }
 
 export interface RevisionGrupo {
   temarioId: number;
@@ -57,26 +45,26 @@ interface RevisionAPIResponse {
 
 export const revisionesService = {
   // Obtener lista de revisiones
-async getRevisiones(): Promise<any[]> {
-  try {
-    const response = await api.get<any[]>('/lista-revisiones');
+  async getRevisiones(): Promise<any[]> {
+    try {
+      const response = await api.get<any[]>('/lista-revisiones');
 
-    return response.data.map(temario => {
-      return {
-        id: String(temario.temario_id),
-        titulo: temario.oposicion_nombre,
-        descripcion: 'Revisión del temario',
-        candidato: 'Sistema de detección',
-        fechaEnvio: new Date().toISOString(),
-        estado: 'pendiente' as const,
-        temas: temario.temas_convocatoria // 👈 CLAVE
-      };
-    });
-  } catch (error) {
-    console.error('Error obteniendo revisiones:', error);
-    throw error;
-  }
-},
+      return response.data.map(temario => {
+        return {
+          id: String(temario.temario_id),
+          titulo: temario.oposicion_nombre,
+          descripcion: 'Revisión del temario',
+          candidato: 'Sistema de detección',
+          fechaEnvio: new Date().toISOString(),
+          estado: 'pendiente' as const,
+          temas: temario.temas_convocatoria
+        };
+      });
+    } catch (error) {
+      console.error('Error obteniendo revisiones:', error);
+      throw error;
+    }
+  },
 
 
   // Enviar decisión sobre temario (aprobar o corregir)

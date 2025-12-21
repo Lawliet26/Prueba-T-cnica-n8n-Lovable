@@ -3,6 +3,7 @@ import { setCookie, getCookie, deleteCookie } from '../utils/cookies';
 import { User } from '../types';
 
 interface LoginResponse {
+  profesor_id: number;
   usuario_id: number;
   nombre: string;
   email: string;
@@ -28,6 +29,7 @@ export const authService = {
           id: userData.usuario_id.toString(),
           username: userData.email,
           nombre: userData.nombre,
+          profesor_id: userData.profesor_id.toString(),
           rol: userData.tipo_acceso as 'PROFESOR' | 'ESTUDIANTE'
         };
 

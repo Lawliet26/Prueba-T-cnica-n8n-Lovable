@@ -56,18 +56,31 @@ const Oposiciones: React.FC = () => {
     });
   }, [oposiciones, categoriaFilter, provinciaFilter, searchTerm]);
 
-  const handleSolicitarTemario = async (id: string) => {
-    try {
-      const oposicion = oposiciones.find(o => o.id === id);
-      await oposicionesService.compararTemario({
-        user_id: parseInt(user?.id || '0'),
-        oposicion_id: parseInt(id)
-      });
-      message.success(`Temario solicitado para: ${oposicion?.titulo}`);
-    } catch (error) {
-      message.error('Error al solicitar el temario');
+const handleSolicitarTemario = async (id: string) => {
+  try {
+    const oposicion = oposiciones.find(o => o.id === id);
+
+    const payload = {
+      user_id: parseInt(user?.id || '0'),
+      oposicion_id: parseInt(id)
+    };
+
+    const response = await oposicionesService.compararTemario(payload);
+
+    if (typeof response === 'string') {
+      message.info(response);
+      // iniciarPolling(payload, oposicion?.titulo);
+      return;
     }
-  };
+
+    if (response?.url_pdf_final) {
+      message.success(`Temario aprobado para: ${oposicion?.titulo}`);
+      window.open(response.url_pdf_final, '_blank');
+    }
+  } catch (error) {
+    message.error('Error al solicitar el temario');
+  }
+};
 
   const containerVariants = {
     hidden: { opacity: 0 },

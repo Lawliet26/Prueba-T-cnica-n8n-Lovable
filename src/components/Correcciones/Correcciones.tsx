@@ -5,20 +5,17 @@ import {
   CheckCircleOutlined, 
   CloseCircleOutlined, 
   UserOutlined,
-  PercentageOutlined,
-  CommentOutlined,
   LinkOutlined
 } from '@ant-design/icons';
 import { correccionesService } from '../../services/correccionesService';
 import { useAuth } from '../../context/AuthContext';
-import { Correccion } from '../../types';
 import './Correcciones.css';
 
 const { Panel } = Collapse;
 
 const Correcciones: React.FC = () => {
   const { user } = useAuth();
-  const [correcciones, setCorrecciones] = useState<Correccion[]>([]);
+  const [correcciones, setCorrecciones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -43,7 +40,7 @@ const Correcciones: React.FC = () => {
     setActionLoading(true);
     try {
       await correccionesService.aprobar(
-        parseInt(user?.id || '0'),
+        parseInt(user?.profesor_id || '0'),
         parseInt(id)
       );
       
@@ -63,7 +60,7 @@ const Correcciones: React.FC = () => {
     setActionLoading(true);
     try {
       await correccionesService.rechazar(
-        parseInt(user?.id || '0'),
+        parseInt(user?.profesor_id || '0'),
         parseInt(id)
       );
       
@@ -128,101 +125,94 @@ const Correcciones: React.FC = () => {
         </motion.p>
       </div>
 
-      <motion.div
-        className="stats-bar"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="stat-item">
-          <span className="stat-number">{correccionesPendientes.length}</span>
-          <span className="stat-label">Pendientes</span>
-        </div>
-        <div className="stat-item stat-aprobado">
-          <span className="stat-number">{correcciones.filter(c => c.estado === 'aprobado').length}</span>
-          <span className="stat-label">Aprobadas</span>
-        </div>
-        <div className="stat-item stat-rechazado">
-          <span className="stat-number">{correcciones.filter(c => c.estado === 'rechazado').length}</span>
-          <span className="stat-label">Rechazadas</span>
-        </div>
-      </motion.div>
-
       <AnimatePresence>
-        <Collapse 
+        <Collapse
           className="correcciones-collapse"
           accordion
           expandIconPosition="end"
         >
-          {correcciones.map((correccion, index) => (
+          {Array.isArray(correcciones) &&
+            correcciones.length > 0 &&
+            correcciones.some(c => Array.isArray(c.temas) && c.temas.length > 0) && 
+            correcciones.map((correcion, index) => (
             <Panel
-              key={correccion.id}
+              key={correcion.id}
               header={
-                <motion.div 
-                  className="correccion-header"
+                <motion.div
+                  className="correcion-header"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 * index }}
                 >
-                  <div className="correccion-header-content">
-                    <h3 className="correccion-title">{correccion.titulo}</h3>
-                    <div className="correccion-meta">
+                  <div className="correcion-header-content">
+                    <h3 className="correcion-title">{correcion.titulo}</h3>
+                    <div className="correcion-meta">
                       <Space size="middle">
-                        <span><UserOutlined /> {correccion.candidato}</span>
-                        <span><PercentageOutlined /> {correccion.coincidenciaPorcentaje?.toFixed(2)}%</span>
-                        {getEstadoTag(correccion.estado)}
+                        <span><UserOutlined /> {correcion.candidato}</span>
+                        {getEstadoTag(correcion.estado)}
                       </Space>
                     </div>
+                  </div>
+
+                  <div className="correccion-actions">
+                    <Button
+                      type="primary"
+                      icon={<CheckCircleOutlined />}
+                      onClick={() => handleAprobar(correcion.id)}
+                      loading={actionLoading}
+                      className="btn-aprobar"
+                    >
+                      Aprobar
+                    </Button>
+                    <Button
+                      icon={<CloseCircleOutlined />}
+                      onClick={() => handleRechazar(correcion.id)}
+                      className="btn-corregir"
+                    >
+                      Rechazar
+                    </Button>
                   </div>
                 </motion.div>
               }
             >
-              <div className="correccion-content">
-                <p className="correccion-description">{correccion.descripcion}</p>
-                
-                <div className="comentario-section">
-                  <div className="comentario-header">
-                    <CommentOutlined />
-                    <h4>Notas:</h4>
-                  </div>
-                  <p className="comentario-text">{correccion.comentarioCorrector}</p>
-                </div>
+              <div className="correcion-content">
+                {Array.isArray(correcion.temas) && correcion.temas.map((tema, tIndex) => (
+                  <div key={tIndex} className="tema-section">
+                    <h4>{tema.titulo}</h4>
 
-                {correccion.urlPdfEvidencia && (
-                  <div className="documentos-section">
-                    <a href={correccion.urlPdfEvidencia} target="_blank" rel="noopener noreferrer" className="documento-item">
-                      <LinkOutlined />
-                      <span>Ver PDF Evidencia</span>
-                    </a>
+                    {tema.recursos_vinculados.map((recurso, rIndex) => (
+                      <div key={rIndex} className="documento-item">
+                        <Space size="middle">
+                          <Tag color="blue">{recurso.ley_detectada}</Tag>
+                          <Tag color="green">
+                            {parseFloat(recurso.coincidencia_maxima).toFixed(2)}%
+                          </Tag>
+                          <a
+                          href={recurso.url_pdf_evidencia}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="documento-link"
+                        >
+                          <LinkOutlined /> Ver PDF Evidencia
+                        </a>
+                        </Space>
+                      
+                        {recurso.fragmentos_notas?.length > 0 && (
+                          <div className="notas-section">
+                            <h4>Notas:</h4>
+                            <ul>
+                              {recurso.fragmentos_notas.map((n, i) => (
+                                <li key={i}>
+                                  {n.nota} ({n.coincidencia}%)
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                )}
-
-                {correccion.estado === 'pendiente' && (
-                  <div className="correccion-actions">
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Button
-                        type="primary"
-                        icon={<CheckCircleOutlined />}
-                        onClick={() => handleAprobar(correccion.id)}
-                        loading={actionLoading}
-                        className="btn-aprobar"
-                      >
-                        Aprobar
-                      </Button>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Button
-                        danger
-                        icon={<CloseCircleOutlined />}
-                        onClick={() => handleRechazar(correccion.id)}
-                        loading={actionLoading}
-                        className="btn-rechazar"
-                      >
-                        Rechazar
-                      </Button>
-                    </motion.div>
-                  </div>
-                )}
+                ))}
               </div>
             </Panel>
           ))}
