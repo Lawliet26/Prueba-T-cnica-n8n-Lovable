@@ -1,0 +1,445 @@
+/* ========================================
+   TEMARIOS - Estilos principales
+   ======================================== */
+
+/* Container principal - Sin padding porque Dashboard ya lo aplica */
+.temarios-container {
+  min-height: calc(100vh - 80px);
+  background-color: transparent;
+  padding: 0;
+  width: 100%;
+}
+
+.temarios-content {
+  max-width: 100%;
+  margin: 0;
+}
+
+/* ========================================
+   Header
+   ======================================== */
+.temarios-header {
+  margin-bottom: 2rem;
+}
+
+.temarios-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 0.5rem;
+}
+
+.temarios-subtitle {
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
+.temarios-empty {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.temarios-empty-text {
+  color: #94a3b8;
+}
+
+/* ========================================
+   Loading
+   ======================================== */
+.temarios-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.temarios-loading-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #7c3aed;
+  animation: spin 1s linear infinite;
+}
+
+.temarios-loading-text {
+  color: #94a3b8;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   Accordion / Cards
+   ======================================== */
+.temarios-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.temarios-container .oposicion-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(20px);
+}
+
+.temarios-container .oposicion-card:hover {
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+  transform: translateY(-2px);
+}
+
+.temarios-container .oposicion-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.temarios-container .oposicion-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.temarios-container .oposicion-header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  text-align: left;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.temarios-container .oposicion-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.temarios-container .oposicion-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.temarios-container .oposicion-user {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #94a3b8;
+}
+
+.temarios-container .oposicion-user-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.temarios-container .oposicion-chevron {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.temarios-container .oposicion-trigger[data-state="open"] .oposicion-chevron {
+  transform: rotate(180deg);
+}
+
+.temarios-container .oposicion-content {
+  padding: 0 1.5rem 1.5rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   Estado Tags
+   ======================================== */
+.estado-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.estado-tag--success {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.estado-tag--info {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.estado-tag--warning {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.estado-tag--default {
+  background-color: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+/* ========================================
+   Tabla de Temas
+   ======================================== */
+.temarios-container .temas-table-container {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.temarios-container .temas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.temarios-container .temas-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.temarios-container .temas-table td {
+  padding: 1rem;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+}
+
+.temarios-container .temas-table tr:last-child td {
+  border-bottom: none;
+}
+
+.temarios-container .temas-table tr:hover td {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.temarios-container .tema-titulo {
+  font-weight: 500;
+  color: #f8fafc;
+}
+
+.temarios-container .recursos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* ========================================
+   Recurso Link
+   ======================================== */
+.temarios-container .recurso-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.temarios-container .recurso-link:hover {
+  color: #a78bfa;
+}
+
+.temarios-container .recurso-link:hover .recurso-filename {
+  text-decoration: underline;
+}
+
+.temarios-container .recurso-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.temarios-container .recurso-filename {
+  transition: text-decoration 0.2s ease;
+}
+
+.temarios-container .recurso-external-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.temarios-container .recurso-link:hover .recurso-external-icon {
+  opacity: 1;
+}
+
+/* ========================================
+   RESPONSIVE - Tablet
+   ======================================== */
+@media (max-width: 1024px) {
+  .temarios-title {
+    font-size: 1.5rem;
+  }
+
+  .temarios-container .oposicion-trigger {
+    padding: 1rem;
+  }
+
+  .temarios-container .oposicion-content {
+    padding: 0 1rem 1rem;
+  }
+}
+
+/* ========================================
+   RESPONSIVE - Mobile
+   ======================================== */
+@media (max-width: 768px) {
+  .temarios-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .temarios-title {
+    font-size: 1.25rem;
+  }
+
+  .temarios-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .temarios-container .oposicion-trigger {
+    padding: 0.875rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .temarios-container .oposicion-header-content {
+    margin-right: 0;
+  }
+
+  .temarios-container .oposicion-title {
+    font-size: 1rem;
+    padding-right: 2rem;
+  }
+
+  .temarios-container .oposicion-meta {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .temarios-container .oposicion-chevron {
+    position: absolute;
+    top: 0.875rem;
+    right: 0.875rem;
+  }
+
+  .temarios-container .oposicion-card {
+    position: relative;
+  }
+
+  .temarios-container .oposicion-content {
+    padding: 0 0.875rem 0.875rem;
+  }
+
+  /* Tabla responsive - Stack vertical */
+  .temarios-container .temas-table thead {
+    display: none;
+  }
+
+  .temarios-container .temas-table,
+  .temarios-container .temas-table tbody,
+  .temarios-container .temas-table tr,
+  .temarios-container .temas-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .temarios-container .temas-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .temarios-container .temas-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .temarios-container .temas-table td:last-child {
+    border-bottom: none;
+  }
+
+  .temarios-container .temas-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 0.375rem;
+  }
+
+  .temarios-container .tema-titulo {
+    font-size: 0.875rem;
+  }
+
+  .temarios-container .recurso-link {
+    font-size: 0.875rem;
+  }
+}
+
+/* ========================================
+   RESPONSIVE - Small Mobile
+   ======================================== */
+@media (max-width: 480px) {
+  .temarios-title {
+    font-size: 1.125rem;
+  }
+
+  .temarios-container .oposicion-title {
+    font-size: 0.9375rem;
+  }
+
+  .estado-tag {
+    font-size: 0.6875rem;
+    padding: 0.1875rem 0.5rem;
+  }
+}

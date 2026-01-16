@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL de la API - usar variable de entorno
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/webhook';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://n8n.thepower.education/webhook';
 
 // Crear instancia de axios con configuración global
 const api = axios.create({

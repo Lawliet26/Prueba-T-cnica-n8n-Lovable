@@ -7,7 +7,8 @@ import {
   MenuOutlined,
   BookOutlined,
   FileSearchOutlined,
-  EditOutlined
+  EditOutlined,
+  SnippetsOutlined
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
 import type { MenuProps } from 'antd';
@@ -26,6 +27,8 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
     { key: 'oposiciones', label: 'Oposiciones', icon: <BookOutlined />, visible: true },
     { key: 'revisiones', label: 'Revisiones', icon: <FileSearchOutlined />, visible: isProfesor },
     { key: 'correcciones', label: 'Correcciones', icon: <EditOutlined />, visible: isProfesor },
+    { key: 'mistemarios', label: 'Mis Temarios', icon: <SnippetsOutlined />, visible: true },
+
   ].filter(item => item.visible);
 
   const userMenuItems: MenuProps['items'] = [

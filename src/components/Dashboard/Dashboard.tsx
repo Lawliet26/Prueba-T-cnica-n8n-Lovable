@@ -5,6 +5,7 @@ import Oposiciones from '../Oposiciones/Oposiciones';
 import Revisiones from '../Revisiones/Revisiones';
 import Correcciones from '../Correcciones/Correcciones';
 import './Dashboard.css';
+import Temarios from '../Temarios/Temarios';
 
 const Dashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('oposiciones');
@@ -23,6 +24,8 @@ const Dashboard: React.FC = () => {
         return <Revisiones />;
       case 'correcciones':
         return <Correcciones />;
+      case 'mistemarios':
+        return <Temarios />;
       default:
         return <Oposiciones />;
     }

@@ -21,3 +21,20 @@ export interface User {
   nombre: string;
   rol: 'PROFESOR' | 'ESTUDIANTE';
 }
+
+export interface Recurso {
+  filename: string;
+  url: string;
+}
+
+export interface TemaTemario {
+  titulo_tema_oposicion: string;
+  recursos: Recurso[];
+}
+
+export interface OposicionData {
+  id_oposicion: number;
+  titulo_oposicion: string;
+  estado_solicitud: string;
+  temario: TemaTemario[];
+}
