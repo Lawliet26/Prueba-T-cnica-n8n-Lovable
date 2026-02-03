@@ -58,11 +58,11 @@ const OposicionCard: React.FC<OposicionCardProps> = ({ oposicion, index, onSolic
           >
             {getEstadoLabel(oposicion.estado)}
           </Tag>
-          <Tag className="categoria-tag">{oposicion.categoria}</Tag>
+          <Tag className="estado-tag">{oposicion.categoria}</Tag>
         </div>
 
         <h3 className="card-title">{oposicion.titulo}</h3>
-        <p className="card-description">{oposicion.descripcion}</p>
+        {oposicion.descripcion === "" || oposicion.descripcion === "null" ? null : <p className="card-description">{oposicion.descripcion}</p>}
 
         <div className="card-info">
           <Tooltip title="Provincia">

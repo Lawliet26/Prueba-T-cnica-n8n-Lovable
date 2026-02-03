@@ -6,7 +6,7 @@ import Revisiones from '../Revisiones/Revisiones';
 import Correcciones from '../Correcciones/Correcciones';
 import './Dashboard.css';
 import Temarios from '../Temarios/Temarios';
-import AdminOposiciones from '../Admin/adminOposiciones';
+import AdminOposiciones from '../Admin/AdminOposicioness';
 
 const Dashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('oposiciones');
