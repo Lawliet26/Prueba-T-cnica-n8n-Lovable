@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, User } from 'lucide-react';
-// import { EstadoTag } from './EstadoTag';
 import { OposicionData } from '@/types';
 import { useState } from 'react';
 import { TemaTable } from './TemaTable';
+import { RecursosModal } from './RecursosModal';
 import './Temarios.css';
+import { Button } from 'antd';
 
 interface OposicionAccordionProps {
   oposiciones: OposicionData[];
@@ -12,63 +13,92 @@ interface OposicionAccordionProps {
 
 export const OposicionAccordion = ({ oposiciones }: OposicionAccordionProps) => {
   const [openId, setOpenId] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedOposicion, setSelectedOposicion] = useState<OposicionData | null>(null);
 
   const toggleAccordion = (id: number) => {
     setOpenId(openId === id ? null : id);
   };
+
+  const handleVerRecursos = (oposicion: OposicionData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedOposicion(oposicion);
+    setModalOpen(true);
+  };
+
   return (
+    <>
       <div className="temarios-accordion">
         {Array.isArray(oposiciones) &&
-            oposiciones.length > 0 &&
-            oposiciones.map((oposicion, index) => {
-          const isOpen = openId === oposicion.id_oposicion;
+          oposiciones.length > 0 &&
+          oposiciones.map((oposicion, index) => {
+            const isOpen = openId === oposicion.id_oposicion;
 
-          return (
-            <motion.div
-            key={oposicion.id_oposicion}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * index }}
-            className="oposicion-card"
-            >
-              <button
-                className="oposicion-trigger"
-                data-state={isOpen ? 'open' : 'closed'}
-                onClick={() => toggleAccordion(oposicion.id_oposicion)}
-                aria-expanded={isOpen}
+            return (
+              <motion.div
+                key={oposicion.id_oposicion}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                className="oposicion-card-accordion"
               >
-                <div className="oposicion-header-content">
-                  <h3 className="oposicion-title">
-                    {oposicion.titulo_oposicion}
-                  </h3>
-                  <div className="oposicion-meta">
-                    <span className="oposicion-user">
-                      <User className="oposicion-user-icon" />
-                      Sistema de detección
-                    </span>
-                  </div>
-                </div>
-                <ChevronDown className="oposicion-chevron" />
-              </button>
-
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <div className="oposicion-content">
-                      <TemaTable temas={oposicion.temario} />
+                <button
+                  className="oposicion-trigger"
+                  data-state={isOpen ? 'open' : 'closed'}
+                  onClick={() => toggleAccordion(oposicion.id_oposicion)}
+                  aria-expanded={isOpen}
+                >
+                  <div className="oposicion-header-content">
+                    <div>
+                      <h3 className="oposicion-title">
+                        {oposicion.titulo_oposicion}
+                      </h3>
+                      <div className="oposicion-meta">
+                        <span className="oposicion-user">
+                          <User className="oposicion-user-icon" />
+                          Sistema de detección
+                        </span>
+                      </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
+
+                    <Button 
+                      size="large"
+                      onClick={(e) => handleVerRecursos(oposicion, e)}
+                    >
+                      Ver Recursos
+                    </Button>
+                  </div>
+                  <ChevronDown className="oposicion-chevron" />
+                </button>
+
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <div className="oposicion-content">
+                        <TemaTable temas={oposicion.temario} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
       </div>
-    );
-  };
+
+      {selectedOposicion && (
+        <RecursosModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          oposicionId={selectedOposicion.id_oposicion}
+          tituloOposicion={selectedOposicion.titulo_oposicion}
+        />
+      )}
+    </>
+  );
+};

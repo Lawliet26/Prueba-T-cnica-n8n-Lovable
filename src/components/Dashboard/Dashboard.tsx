@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../Layout/Header';
 import Oposiciones from '../Oposiciones/Oposiciones';
@@ -9,7 +9,25 @@ import Temarios from '../Temarios/Temarios';
 import AdminOposiciones from '../Admin/AdminOposicioness';
 
 const Dashboard: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState('oposiciones');
+  const [currentPage, setCurrentPage] = useState<string>(() => {
+    const saved = localStorage.getItem('selectedPage');
+    return saved || 'oposiciones';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('selectedPage', currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'selectedPage' && e.newValue) {
+        setCurrentPage(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const pageVariants = {
     initial: { opacity: 0, x: 20 },

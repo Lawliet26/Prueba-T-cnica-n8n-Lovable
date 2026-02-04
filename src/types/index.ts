@@ -8,7 +8,7 @@ export interface Oposicion {
   provinciaId?: number;
   fechaConvocatoria: string;
   plazas: number;
-  estado: 'abierta' | 'cerrada' | 'proxima';
+  estado: 'abierta' | 'cerrada' | 'en curso';
   urlBasesOficiales?: string;
   tieneTemarioListo?: boolean;
 }
@@ -25,6 +25,17 @@ export interface User {
 export interface Recurso {
   filename: string;
   url: string;
+}
+
+export interface RecursoGet {
+  titulo: string;
+  url: string;
+  mimetype: string;
+  tipo: 'link' | 'audio' | 'video' | 'documento' | 'image';
+}
+
+export interface RecursosResponse {
+  recursos: RecursoGet[];
 }
 
 export interface TemaTemario {

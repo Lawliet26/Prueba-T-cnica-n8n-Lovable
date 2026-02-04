@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Table, 
-  Select, 
-  Input, 
-  Button, 
-  message, 
-  Space, 
+import {
+  Table,
+  Select,
+  Input,
+  Button,
+  message,
+  Space,
   Spin,
   Modal,
   Form,
@@ -21,9 +21,9 @@ import {
   Upload,
   Radio
 } from 'antd';
-import { 
-  PlusOutlined, 
-  SearchOutlined, 
+import {
+  PlusOutlined,
+  SearchOutlined,
   ReloadOutlined,
   EditOutlined,
   SaveOutlined,
@@ -45,6 +45,7 @@ import { categoriasService, Categoria } from '../../services/categoriasService';
 import { recursosService } from '../../services/recursosService';
 import { OposicionAdmin } from '../../types';
 import './AdminOposiciones.css';
+import { useAuth } from '@/context/AuthContext';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -55,6 +56,7 @@ const TIPOS_OPOSICION = ['Convocatoria', 'Oferta'];
 const ESTADOS_OPOSICION = ['Abierta', 'Cerrada', 'En curso'];
 
 const AdminOposiciones: React.FC = () => {
+  const { user } = useAuth();
   const [oposiciones, setOposiciones] = useState<OposicionAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [provincias, setProvincias] = useState<Provincia[]>([]);
@@ -63,7 +65,7 @@ const AdminOposiciones: React.FC = () => {
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const [editedRow, setEditedRow] = useState<Partial<OposicionAdmin>>({});
   const [savingId, setSavingId] = useState<number | null>(null);
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -75,7 +77,7 @@ const AdminOposiciones: React.FC = () => {
   const [filterMunicipio, setFilterMunicipio] = useState<number | null>(null);
   const [filterCategoria, setFilterCategoria] = useState<number | null>(null);
   const [filterEstado, setFilterEstado] = useState<string | null>(null);
-  const [filterTipo, setFilterTipo] = useState<string | null>("Convocatoria");
+  const [filterTipo, setFilterTipo] = useState<string | null>(null);
   const [filterDateRange, setFilterDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
 
   // Add new item modals
@@ -115,7 +117,7 @@ const AdminOposiciones: React.FC = () => {
         municipiosService.getMunicipios(),
         categoriasService.getCategorias()
       ]);
-      
+
       setProvincias(provData);
       setMunicipios(munData);
       setCategorias(catData);
@@ -128,7 +130,7 @@ const AdminOposiciones: React.FC = () => {
     setLoading(true);
     try {
       const offset = (currentPage - 1) * pageSize;
-      
+
       const filters = {
         search: searchText || undefined,
         provincia_id: filterProvincia || undefined,
@@ -193,7 +195,7 @@ const AdminOposiciones: React.FC = () => {
         fecha_fin: editedRow.fecha_fin,
         observaciones: editedRow.observaciones
       });
-      
+
       message.success('Oposición actualizada correctamente');
       setEditingKey(null);
       setEditedRow({});
@@ -204,6 +206,7 @@ const AdminOposiciones: React.FC = () => {
       setSavingId(null);
     }
   };
+  console.log();
 
   const handleFieldChange = (field: keyof OposicionAdmin, value: any) => {
     setEditedRow(prev => ({ ...prev, [field]: value }));
@@ -231,7 +234,7 @@ const AdminOposiciones: React.FC = () => {
         fecha_fin: values.fecha_fin ? values.fecha_fin.format('YYYY-MM-DD') : undefined,
         observaciones: values.observaciones
       });
-      
+
       message.success('Oposición creada correctamente');
       setAddOposicionModal(false);
       createForm.resetFields();
@@ -278,7 +281,7 @@ const AdminOposiciones: React.FC = () => {
       }
 
       await recursosService.uploadRecurso(formData);
-      
+
       message.success('Recurso agregado correctamente');
       setAddRecursoModal(false);
       recursoForm.resetFields();
@@ -357,9 +360,9 @@ const AdminOposiciones: React.FC = () => {
           <>
             {menu}
             <Divider style={{ margin: '8px 0' }} />
-            <Button 
-              type="text" 
-              icon={<PlusOutlined />} 
+            <Button
+              type="text"
+              icon={<PlusOutlined />}
               onClick={onAddClick}
               className="add-option-btn"
             >
@@ -392,12 +395,32 @@ const AdminOposiciones: React.FC = () => {
     }
   };
 
+  const handleSolicitarTemario = async (id: number) => {
+    try {
+
+      const payload = {
+        user_id: parseInt(user?.id || '0'),
+        oposicion_id: id
+      };
+
+      const response = await oposicionesService.compararTemario(payload);
+
+      if (typeof response === 'string') {
+        message.info(response);
+        return;
+      }
+
+    } catch (error) {
+      message.error('Error al solicitar el temario');
+    }
+  };
+
   const columns: ColumnsType<OposicionAdmin> = [
     {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      width: 70,
+      width: 170,
       render: (id) => <Text strong className="id-cell">#{id}</Text>
     },
     {
@@ -423,7 +446,7 @@ const AdminOposiciones: React.FC = () => {
       title: 'Municipio',
       dataIndex: 'nombre_municipio',
       key: 'nombre_municipio',
-      width: 140,
+      width: 270,
       render: (nombre) => nombre ? (
         <Tag className="tipo-tag">{nombre}</Tag>
       ) : (
@@ -434,7 +457,7 @@ const AdminOposiciones: React.FC = () => {
       title: 'Categoría',
       dataIndex: 'categoria_id',
       key: 'categoria_id',
-      width: 160,
+      width: 270,
       render: (_, record) => {
         if (editingKey === record.id) {
           return renderSelectWithAdd(
@@ -476,8 +499,8 @@ const AdminOposiciones: React.FC = () => {
           );
         }
         return (
-          <Tag 
-            color={getTipoColor(record.tipo)} 
+          <Tag
+            color={getTipoColor(record.tipo)}
             className="tipo-tag"
           >
             {record.tipo}
@@ -505,8 +528,8 @@ const AdminOposiciones: React.FC = () => {
           );
         }
         return (
-          <Badge 
-            status={getEstadoColor(record.estado) as any} 
+          <Badge
+            status={getEstadoColor(record.estado) as any}
             text={record.estado}
             className="estado-badge"
           />
@@ -557,9 +580,9 @@ const AdminOposiciones: React.FC = () => {
         }
         return record.url_bases_oficiales ? (
           <Tooltip title="Ver bases oficiales">
-            <Button 
-              type="link" 
-              href={record.url_bases_oficiales} 
+            <Button
+              type="link"
+              href={record.url_bases_oficiales}
               target="_blank"
               icon={<LinkOutlined />}
               className="link-btn"
@@ -592,7 +615,7 @@ const AdminOposiciones: React.FC = () => {
         }
         return record.observaciones ? (
           <Tooltip title={record.observaciones}>
-            <Text ellipsis>{record.observaciones}</Text>
+            <Text ellipsis>{record.observaciones === null || record.observaciones === undefined || record.observaciones === 'null' ? '-' : record.observaciones}</Text>
           </Tooltip>
         ) : (
           <Text type="secondary">-</Text>
@@ -602,7 +625,7 @@ const AdminOposiciones: React.FC = () => {
     {
       title: 'Acciones',
       key: 'actions',
-      width: 150,
+      width: 530,
       render: (_, record) => {
         if (editingKey === record.id) {
           return (
@@ -630,23 +653,38 @@ const AdminOposiciones: React.FC = () => {
         }
         return (
           <Space size={4}>
-            <Tooltip title="Editar">
+            <Tooltip title="Modifica los campos disponibles">
               <Button
                 type="text"
                 icon={<EditOutlined />}
                 onClick={() => startEditing(record)}
                 disabled={editingKey !== null}
                 className="edit-btn"
-              />
+              >
+                Editar
+              </Button>
             </Tooltip>
-            <Tooltip title="Agregar Archivo">
+            <Tooltip title="Agregar todos los archivos correspondientes a esta convocatoria">
               <Button
                 type="text"
                 icon={<FileAddOutlined />}
                 onClick={() => openRecursoModal(record.id)}
                 disabled={editingKey !== null}
-                className="file-btn"
-              />
+                className="edit-btn"
+              >
+                Aregar archivo
+              </Button>
+            </Tooltip>
+            <Tooltip title={record.tiene_temario_listo ? "Temario ya disponible para guardar" : "Solicita un temario"}>
+              <Button
+                type="text"
+                icon={<FileAddOutlined />}
+                onClick={() => handleSolicitarTemario(record.id)}
+                disabled={editingKey !== null}
+                className="edit-btn"
+              >
+                {record.tiene_temario_listo ? "Agregar a mis Convocatorias" : "Solicitar Temario"}
+              </Button>
             </Tooltip>
           </Space>
         );
@@ -655,7 +693,7 @@ const AdminOposiciones: React.FC = () => {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       className="admin-oposiciones"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -692,9 +730,9 @@ const AdminOposiciones: React.FC = () => {
             )}
           </Space>
           <Space>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />} 
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
               onClick={() => setAddOposicionModal(true)}
             >
               Nueva Oposición
@@ -709,7 +747,7 @@ const AdminOposiciones: React.FC = () => {
             )}
           </Space>
         </div>
-        
+
         <div className="filters-content">
           <Input
             placeholder="Buscar por título, provincia, municipio..."
@@ -722,7 +760,7 @@ const AdminOposiciones: React.FC = () => {
             className="search-input"
             allowClear
           />
-          
+
           <Select
             placeholder="Provincia"
             value={filterProvincia}
@@ -841,7 +879,7 @@ const AdminOposiciones: React.FC = () => {
             scroll={{ x: 2000 }}
             size="middle"
             className="admin-table"
-            rowClassName={(record) => 
+            rowClassName={(record) =>
               editingKey === record.id ? 'editing-row' : ''
             }
           />
@@ -876,8 +914,8 @@ const AdminOposiciones: React.FC = () => {
           </Form.Item>
 
           <Form.Item label="Tipo de Recurso">
-            <Radio.Group 
-              value={recursoType} 
+            <Radio.Group
+              value={recursoType}
               onChange={(e) => {
                 setRecursoType(e.target.value);
                 setFileList([]);

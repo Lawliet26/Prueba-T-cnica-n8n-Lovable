@@ -16,15 +16,16 @@ const TIPOS_OPOSICION = ['Convocatoria', 'Oferta'];
 
 const Oposiciones: React.FC = () => {
   const { user } = useAuth();
+  const [messageApi, contextHolder] = message.useMessage();
   const [oposiciones, setOposiciones] = useState<Oposicion[]>([]);
   const [loading, setLoading] = useState(true);
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  
+
   // Filtros
   const [categoriaFilter, setCategoriaFilter] = useState<number | null>(null);
   const [provinciaFilter, setProvinciaFilter] = useState<number | null>(null);
-  const [tipoFilter, setTipoFilter] = useState<string>('Oferta'); // Por defecto "Oferta"
+  const [tipoFilter, setTipoFilter] = useState<string>('Convocatoria');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   // Paginación
@@ -43,7 +44,7 @@ const Oposiciones: React.FC = () => {
         setProvincias(provData);
         setCategorias(catData);
       } catch (error) {
-        message.error('Error al cargar los filtros');
+        messageApi.error('Error al cargar los filtros');
       }
     };
 
@@ -59,7 +60,7 @@ const Oposiciones: React.FC = () => {
     try {
       setLoading(true);
       const offset = (currentPage - 1) * pageSize;
-      
+
       const filters = {
         search: searchTerm || undefined,
         provincia_id: provinciaFilter || undefined,
@@ -70,7 +71,7 @@ const Oposiciones: React.FC = () => {
       };
 
       const result = await oposicionesService.getOposicionesAdmin(filters);
-      
+
       // Mapear los datos de OposicionAdmin a Oposicion
       const mappedOposiciones: Oposicion[] = result.data.map(item => ({
         id: item.id.toString(),
@@ -82,15 +83,16 @@ const Oposiciones: React.FC = () => {
         provinciaId: item.provincia_id,
         fechaConvocatoria: item.fecha_convocatoria,
         plazas: item.num_plazas,
-        estado: item.estado === 'Abierta' ? 'abierta' : item.estado === 'Cerrada' ? 'cerrada' : 'proxima',
+        estado: item.estado === 'Abierta' ? 'abierta' : item.estado === 'Cerrada' ? 'cerrada' : 'en curso',
         urlBasesOficiales: item.url_bases_oficiales,
         tieneTemarioListo: item.tiene_temario_listo
       }));
 
+
       setOposiciones(mappedOposiciones);
       setTotal(result.total);
     } catch (error) {
-      message.error('Error al cargar las oposiciones');
+      messageApi.error('Error al cargar las oposiciones');
     } finally {
       setLoading(false);
     }
@@ -98,8 +100,6 @@ const Oposiciones: React.FC = () => {
 
   const handleSolicitarTemario = async (id: string) => {
     try {
-      const oposicion = oposiciones.find(o => o.id === id);
-
       const payload = {
         user_id: parseInt(user?.id || '0'),
         oposicion_id: parseInt(id)
@@ -108,16 +108,12 @@ const Oposiciones: React.FC = () => {
       const response = await oposicionesService.compararTemario(payload);
 
       if (typeof response === 'string') {
-        message.info(response);
+        messageApi.info(response);
         return;
       }
 
-      // if (response?.url_pdf_final) {
-      //   message.success(`Temario aprobado para: ${oposicion?.titulo}`);
-      //   window.open(response.url_pdf_final, '_blank');
-      // }
     } catch (error) {
-      message.error('Error al solicitar el temario');
+      messageApi.error('Error al solicitar el temario');
     }
   };
 
@@ -150,8 +146,9 @@ const Oposiciones: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {contextHolder}
       <div className="page-header">
-        <motion.h1 
+        <motion.h1
           className="page-title"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -159,7 +156,7 @@ const Oposiciones: React.FC = () => {
         >
           Oposiciones
         </motion.h1>
-        <motion.p 
+        <motion.p
           className="page-subtitle"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -169,7 +166,7 @@ const Oposiciones: React.FC = () => {
         </motion.p>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -255,7 +252,7 @@ const Oposiciones: React.FC = () => {
 
             {hasActiveFilters && (
               <div>
-                <Button  onClick={clearFilters}>
+                <Button onClick={clearFilters} size='large'>
                   Limpiar filtros
                 </Button>
               </div>

@@ -1,3 +1,4 @@
+import { RecursoGet, RecursosResponse } from '@/types';
 import api from '../config/api';
 
 export const recursosService = {
@@ -10,6 +11,23 @@ export const recursosService = {
       });
     } catch (error) {
       console.error('Error subiendo recurso:', error);
+      throw error;
+    }
+  },
+
+  async getRecursosByOposicion(oposicionId: number): Promise<RecursoGet[]> {
+    try {
+      const response = await api.get<RecursosResponse[]>(
+        `/obtener-recursos?oposicion_id=${oposicionId}`
+      );
+
+      if (response.data && response.data[0] && response.data[0].recursos) {
+        return response.data[0].recursos;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Error obteniendo recursos:', error);
       throw error;
     }
   }

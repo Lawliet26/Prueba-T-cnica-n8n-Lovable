@@ -46,8 +46,8 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
       key: 'rol',
       label: (
         <Space>
-          <span style={{ color: user?.rol === 'PROFESOR' ? '#22c55e' : '#3b82f6' }}>
-            {user?.rol === 'PROFESOR' ? 'Profesor' : 'Estudiante'}
+          <span style={{ color: user?.rol === 'PROFESOR' ? '#22c55e' : user?.rol === 'ESTUDIANTE' ? '#3b82f6' : '#ff0000' }}>
+            {user?.rol === 'PROFESOR' ? 'Profesor' : user?.rol === 'ESTUDIANTE' ? 'Estudiante' : 'Admin'}
           </span>
         </Space>
       ),
@@ -77,6 +77,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
     ),
     onClick: () => onNavigate(item.key),
   }));
+
 
   return (
     <motion.header

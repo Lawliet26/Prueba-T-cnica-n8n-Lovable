@@ -19,8 +19,6 @@ export const Temarios = () => {
       try {
         setLoading(true);
         const data = await temariosService.getMisTemarios(user);
-        console.log(data);
-        
         setOposiciones(data);
       } catch (error) {
         toast({
@@ -38,9 +36,9 @@ export const Temarios = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-8">
-        <Spin size="large" tip="Cargando tus temarios..." />
-      </div>
+      <div className="loading-container">
+          <Spin size="large" tip="Cargando correcciones..." />
+        </div>
     );
   }
 

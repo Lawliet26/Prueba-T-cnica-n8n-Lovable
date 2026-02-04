@@ -73,6 +73,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -87,8 +88,8 @@
   gap: 1rem;
 }
 
-.temarios-container .oposicion-card {
-  background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+.temarios-container .oposicion-card-accordion {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
   overflow: hidden;
@@ -96,17 +97,17 @@
   backdrop-filter: blur(20px);
 }
 
-.temarios-container .oposicion-card:hover {
+/* .temarios-container .oposicion-card-accordion:hover {
   border-color: rgba(124, 58, 237, 0.5);
   box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
   transform: translateY(-2px);
-}
+} */
 
 .temarios-container .oposicion-trigger {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 1rem 1.5rem;
   background: transparent;
   border: none;
@@ -115,14 +116,12 @@
   text-align: left;
 }
 
-.temarios-container .oposicion-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
 
 .temarios-container .oposicion-header-content {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
   text-align: left;
   flex: 1;
@@ -177,6 +176,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -309,6 +309,9 @@
 .temarios-container .recurso-link:hover .recurso-external-icon {
   opacity: 1;
 }
+
+/* -------------------------------------------------------------------- */
+
 
 /* ========================================
    RESPONSIVE - Tablet
@@ -443,3 +446,4 @@
     padding: 0.1875rem 0.5rem;
   }
 }
+
